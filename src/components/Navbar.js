@@ -1,37 +1,59 @@
 "use client";
-import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef(null); // GSAP reference for menu
-  const menuBackgroundRef = useRef(null); // GSAP reference for menu background
+  const menuRef = useRef(null);
+  const backdropRef = useRef(null);
 
-  // Toggle the menu open and closed with GSAP animation
+  // GSAP animation for opening and closing the menu
   useEffect(() => {
     if (isOpen) {
-      gsap.to(menuRef.current, { x: 0, duration: 0.5, ease: "power3.out" });
-      gsap.to(menuBackgroundRef.current, { opacity: 1, duration: 0.3 });
-    } else {
+      // Fade in the mobile menu with a slight scale effect
       gsap.to(menuRef.current, {
-        x: "-100%",
+        opacity: 1,
+        scaleY: 1,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+      gsap.to(backdropRef.current, {
+        opacity: 1,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+    } else {
+      // Fade out the mobile menu
+      gsap.to(menuRef.current, {
+        opacity: 0,
+        scaleY: 0.5,
         duration: 0.5,
         ease: "power3.in",
       });
-      gsap.to(menuBackgroundRef.current, { opacity: 0, duration: 0.3 });
+      gsap.to(backdropRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power3.in",
+      });
     }
   }, [isOpen]);
 
-  // Handle clicking outside to close the menu
+  // Handle clicking outside the menu to close it
   useEffect(() => {
     const closeMenu = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        backdropRef.current &&
+        !backdropRef.current.contains(e.target)
+      ) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener("mousedown", closeMenu);
+
     return () => {
       document.removeEventListener("mousedown", closeMenu);
     };
@@ -41,34 +63,33 @@ const Navbar = () => {
     <nav className="fixed w-full bg-opacity-30 bg-gray-800 backdrop-blur-lg z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <div className="flex items-center">
             <h1 className="text-white text-xl">Your Logo</h1>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center justify-center space-x-6">
             <Link
-              href="/resume"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              href="/Ayaz-Ahmed.pdf"
+              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-lg transition duration-200 ease-in-out"
             >
               Resume
             </Link>
             <Link
               href="/skills"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-lg transition duration-200 ease-in-out"
             >
               Skills
             </Link>
             <Link
               href="/projects"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-lg transition duration-200 ease-in-out"
             >
               Projects
             </Link>
             <Link
               href="/contact"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-lg transition duration-200 ease-in-out"
             >
               Contact
             </Link>
@@ -116,40 +137,49 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          ref={backdropRef}
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          style={{ opacity: 0 }}
+        ></div>
+      )}
+
       {/* Mobile Menu */}
       <div
-        ref={menuBackgroundRef}
-        className={`absolute top-0 left-0 w-full bg-gray-800 bg-opacity-90 backdrop-blur-lg z-40 transform ${
-          isOpen ? "opacity-100" : "opacity-0"
-        } transition-opacity duration-300`}
+        ref={menuRef}
+        className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-90 backdrop-blur-lg z-50 flex flex-col items-center justify-center"
+        style={{ opacity: 0, scaleY: 0.5 }}
       >
-        {/* Mobile menu content */}
-        <div ref={menuRef} className="p-4 flex flex-col space-y-4">
-          <Link
-            href="/resume"
-            className="text-white px-3 py-2 rounded-md text-base font-medium"
-          >
-            Resume
-          </Link>
-          <Link
-            href="/skills"
-            className="text-white px-3 py-2 rounded-md text-base font-medium"
-          >
-            Skills
-          </Link>
-          <Link
-            href="/projects"
-            className="text-white px-3 py-2 rounded-md text-base font-medium"
-          >
-            Projects
-          </Link>
-          <Link
-            href="/contact"
-            className="text-white px-3 py-2 rounded-md text-base font-medium"
-          >
-            Contact
-          </Link>
-        </div>
+        <Link
+          href="/resume"
+          className="text-white px-6 py-3 text-lg font-medium"
+          onClick={() => setIsOpen(false)}
+        >
+          Resume
+        </Link>
+        <Link
+          href="/skills"
+          className="text-white px-6 py-3 text-lg font-medium"
+          onClick={() => setIsOpen(false)}
+        >
+          Skills
+        </Link>
+        <Link
+          href="/projects"
+          className="text-white px-6 py-3 text-lg font-medium"
+          onClick={() => setIsOpen(false)}
+        >
+          Projects
+        </Link>
+        <Link
+          href="/contact"
+          className="text-white px-6 py-3 text-lg font-medium"
+          onClick={() => setIsOpen(false)}
+        >
+          Contact
+        </Link>
       </div>
     </nav>
   );

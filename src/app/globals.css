@@ -43,15 +43,3 @@ body {
   margin-right: auto;
 }
 
-
-.hero-section {
-  background: linear-gradient(90deg, rgba(29, 78, 216, 1) 0%, rgba(168, 85, 247, 1) 100%);
-}
-
-.hero-btn {
-  transition: all 0.3s ease-in-out;
-}
-
-.hero-btn:hover {
-  transform: scale(1.1);
-}

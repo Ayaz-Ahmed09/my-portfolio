@@ -1,10 +1,12 @@
 "use client";
-import { useEffect } from "react";
+
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import Typed from "react-typed";
 import { useSpring, animated } from "@react-spring/web";
 
 const Hero = () => {
+  const typedRef = useRef(null);
+
   useEffect(() => {
     gsap.from(".hero-title", {
       duration: 2,
@@ -27,6 +29,23 @@ const Hero = () => {
       ease: "back.out(1.7)",
       delay: 3,
     });
+
+    const context = gsap.context(() => {
+      gsap.from(typedRef.current, {
+        scrollTrigger: {
+          trigger: typedRef.current,
+          start: "top 80%",
+        },
+        duration: 2,
+        opacity: 0,
+        y: 50,
+        ease: "power1.in",
+      });
+    }, typedRef);
+
+    return () => {
+      context.revert();
+    };
   }, []);
 
   const fadeIn = useSpring({
@@ -41,14 +60,13 @@ const Hero = () => {
       <h1 className="hero-title text-5xl font-bold text-white mb-4">
         FRONT END DEVELOPER
       </h1>
-      <animated.div style={fadeIn}>
-        <Typed
-          className="hero-subtitle text-3xl text-gray-200 mb-4"
-          strings={["Hi There, I'm Ayaz Ahmed", "at your service"]}
-          typeSpeed={40}
-          backSpeed={50}
-          loop
-        />
+      <animated.div style={fadeIn} ref={typedRef}>
+        <div className="hero-subtitle text-3xl text-gray-200 mb-4">
+          Hi There, I&apos;m Ayaz Ahmed
+        </div>
+        <div className="hero-subtitle text-3xl text-gray-200 mb-4">
+          at your service
+        </div>
       </animated.div>
       <button className="hero-btn px-6 py-3 bg-white text-blue-500 font-semibold rounded-full shadow-lg">
         Explore More
